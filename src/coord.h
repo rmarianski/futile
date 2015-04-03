@@ -24,24 +24,12 @@
  * column,row,zoom members.
  */
 typedef struct futile_coord_s {
-    union {
-        struct {
-            /** @brief coordinate column or x value */
-            unsigned int column;
-            /** @brief coordinate row or y value */
-            unsigned int row;
-            /** @brief coordinate zoom or z value */
-            unsigned int zoom;
-        };
-        struct {
-            /** @brief coordinate column or x value */
-            unsigned int x;
-            /** @brief coordinate row or y value */
-            unsigned int y;
-            /** @brief coordinate zoom or z value */
-            unsigned int z;
-        };
-    };
+    /** @brief coordinate x or column value */
+    unsigned int x;
+    /** @brief coordinate y or row value */
+    unsigned int y;
+    /** @brief coordinate z or zoom value */
+    unsigned int z;
 } futile_coord_s;
 
 /**

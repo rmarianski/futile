@@ -9,13 +9,13 @@ extern void futile_coord_zoom(int delta, futile_coord_s *out) {
 }
 
 extern bool futile_coord_parent(futile_coord_s *coord, futile_coord_s *out_coord) {
-    if (coord->zoom <= 0) {
+    if (coord->z <= 0) {
         return false;
     }
     if (out_coord != coord) {
         *out_coord = *coord;
     }
-    out_coord->zoom -= 1;
+    out_coord->z -= 1;
     out_coord->x >>= 1;
     out_coord->y >>= 1;
     return true;

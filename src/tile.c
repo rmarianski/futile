@@ -17,7 +17,7 @@ extern void futile_for_zoom_range(int zoom_start, int zoom_until, futile_coord_f
 
 extern void futile_for_coord_parents(futile_coord_s *start, int zoom_until, futile_coord_fn for_coord, void *userdata) {
     futile_coord_s coord = *start;
-    while (coord.zoom >= zoom_until) {
+    while (coord.z >= zoom_until) {
         for_coord(&coord, userdata);
         futile_coord_zoom(-1, &coord);
     }
