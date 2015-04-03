@@ -1,4 +1,4 @@
-P=futile
+P=libfutile
 OBJECT_NAMES=coord.o geo.o tile.o
 OBJECTS = $(addprefix src/,$(OBJECT_NAMES))
 CFLAGS = -g -Wall -std=gnu11 -I./src -fPIC -O3
