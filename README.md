@@ -25,7 +25,7 @@ To run the tests:
 #include "coord.h"
 
 int main() {
-    futile_coord_s coord = {.column=1, .row=2, .zoom=3};
+    futile_coord_s coord = {.x=1, .y=2, .z=3};
     char coord_str[16];
     assert(futile_coord_serialize(&coord, sizeof(coord_str), coord_str));
     printf("%s\n", coord_str);
