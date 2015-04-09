@@ -50,7 +50,7 @@ typedef void (*futile_coord_fn)(futile_coord_s *coord, void *userdata);
  * @param[in] for_coord Callback function for each coordinate
  * @param[in] userdata Baton passed into callback function
  */
-void futile_for_zoom_range(int zoom_start, int zoom_until, futile_coord_fn for_coord, void *userdata);
+void futile_for_zoom_range(unsigned int zoom_start, unsigned int zoom_until, futile_coord_fn for_coord, void *userdata);
 
 /**
  * @brief Visit coordinate parents
@@ -63,7 +63,7 @@ void futile_for_zoom_range(int zoom_start, int zoom_until, futile_coord_fn for_c
  * @param[in] for_coord Callback function for each coordinate
  * @param[in] userdata Baton passed into callback function
  */
-void futile_for_coord_parents(futile_coord_s *start, int zoom_until, futile_coord_fn for_coord, void *userdata);
+void futile_for_coord_parents(futile_coord_s *start, unsigned int zoom_until, futile_coord_fn for_coord, void *userdata);
 
 /**
  * @brief Calculate number of cumulative tiles in zoom level
@@ -74,7 +74,7 @@ void futile_for_coord_parents(futile_coord_s *start, int zoom_until, futile_coor
  * @param[in] zoom Zoom level
  * @return[out] Total number of cumulative tiles for a given zoom level
 */
-long futile_n_for_zoom(int zoom);
+long futile_n_for_zoom(unsigned int zoom);
 
 /**
  * @brief Visit coordinates within bounds for a zoom level range
@@ -88,6 +88,6 @@ long futile_n_for_zoom(int zoom);
  * @param[in] for_coord Callback function for each coordinate
  * @param[in] userdata Baton passed into callback function
  */
-void futile_for_bounds(futile_bounds_s *bounds, int zoom_start, int zoom_until, futile_coord_fn for_coord, void *userdata);
+void futile_for_bounds(futile_bounds_s *bounds, unsigned int zoom_start, unsigned int zoom_until, futile_coord_fn for_coord, void *userdata);
 
 #endif

@@ -3,8 +3,8 @@
 #include "geo.h"
 #include "tile.h"
 
-extern void futile_for_zoom_range(int zoom_start, int zoom_until, futile_coord_fn for_coord, void *userdata) {
-    for (int z = zoom_start; z <= zoom_until; z++) {
+extern void futile_for_zoom_range(unsigned int zoom_start, unsigned int zoom_until, futile_coord_fn for_coord, void *userdata) {
+    for (unsigned int z = zoom_start; z <= zoom_until; z++) {
         int limit = pow(2, z);
         for (int x = 0; x < limit; x++) {
             for (int y = 0; y < limit; y++) {
@@ -15,7 +15,7 @@ extern void futile_for_zoom_range(int zoom_start, int zoom_until, futile_coord_f
     }
 }
 
-extern void futile_for_coord_parents(futile_coord_s *start, int zoom_until, futile_coord_fn for_coord, void *userdata) {
+extern void futile_for_coord_parents(futile_coord_s *start, unsigned int zoom_until, futile_coord_fn for_coord, void *userdata) {
     futile_coord_s coord = *start;
     while (coord.z >= zoom_until) {
         for_coord(&coord, userdata);
@@ -23,12 +23,12 @@ extern void futile_for_coord_parents(futile_coord_s *start, int zoom_until, futi
     }
 }
 
-extern long futile_n_for_zoom(int zoom) {
+extern long futile_n_for_zoom(unsigned int zoom) {
     // geometric series, each zoom containing 4 times more tiles
     return (1 - pow(4, zoom + 1)) / -3;
 }
 
-extern void futile_for_bounds(futile_bounds_s *bounds, int zoom_start, int zoom_until, futile_coord_fn for_coord, void *userdata) {
+extern void futile_for_bounds(futile_bounds_s *bounds, unsigned int zoom_start, unsigned int zoom_until, futile_coord_fn for_coord, void *userdata) {
     futile_coord_s coords[2];
     int n_coords = futile_bounds_to_coords(bounds, zoom_start, coords);
     int start_x, until_x, start_y, until_y;
@@ -42,7 +42,7 @@ extern void futile_for_bounds(futile_bounds_s *bounds, int zoom_start, int zoom_
         start_y = until_y = coords[0].y;
     }
     futile_coord_s coord_zoom = {.x=start_x, .y=start_y, .z=zoom_start};
-    for (int z = zoom_start; z <= zoom_until; z++) {
+    for (unsigned int z = zoom_start; z <= zoom_until; z++) {
         futile_coord_s coord_row = coord_zoom;
         for (int y = start_y; y <= until_y; y++) {
             futile_coord_s coord_column = coord_row;
