@@ -141,10 +141,10 @@ void test_coord_cmp() {
         {.x=2, .y=2, .z=3}
     };
     futile_coord_s equal = {.x=2, .y=2, .z=2};
-    for (int i = 0; i < sizeof(less) / sizeof(futile_coord_s); i++) {
+    for (unsigned int i = 0; i < sizeof(less) / sizeof(futile_coord_s); i++) {
         g_assert(futile_coord_cmp(&less[i], &coord) < 0);
     }
-    for (int i = 0; i < sizeof(greater) / sizeof(futile_coord_s); i++) {
+    for (unsigned int i = 0; i < sizeof(greater) / sizeof(futile_coord_s); i++) {
         g_assert(futile_coord_cmp(&greater[i], &coord) > 0);
     }
     g_assert(futile_coord_cmp(&coord, &equal) == 0);
@@ -186,7 +186,7 @@ void test_coord_marshall_examples() {
         {.x=1002463,  .y=312816,   .z=20},
         {.x=12345678, .y=12345678, .z=30}
     };
-    for (int i = 0; i < sizeof(coords) / sizeof(futile_coord_s); i++) {
+    for (unsigned int i = 0; i < sizeof(coords) / sizeof(futile_coord_s); i++) {
         futile_coord_s result;
         uint64_t x = futile_coord_marshall_int(&coords[i]);
         futile_coord_unmarshall_int(x, &result);
@@ -203,7 +203,7 @@ void test_coord_int_zoom_up_examples() {
         {.x=15, .y=15, .z=4},
         {.x=0, .y=0, .z=1}
     };
-    for (int i = 0; i < sizeof(coords) / sizeof(futile_coord_s); i++) {
+    for (unsigned int i = 0; i < sizeof(coords) / sizeof(futile_coord_s); i++) {
         uint64_t coord_int = futile_coord_marshall_int(&coords[i]);
         uint64_t coord_parent_int = futile_coord_int_zoom_up(coord_int);
         futile_coord_s act_coord;

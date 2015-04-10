@@ -136,7 +136,7 @@ void test_coord_to_quadkey() {
         "02",
         "101"
     };
-    for (int i = 0; i < sizeof(coords) / sizeof(futile_coord_s); i++) {
+    for (unsigned int i = 0; i < sizeof(coords) / sizeof(futile_coord_s); i++) {
         char quadkey[4];
         futile_coord_to_quadkey(&coords[i], quadkey);
         g_assert(strcmp(expected_quadkeys[i], quadkey) == 0);
@@ -156,7 +156,7 @@ void test_quadkey_to_coord() {
         {.x=0, .y=1, .z=2},
         {.x=5, .y=0, .z=3}
     };
-    for (int i = 0; i < sizeof(quadkeys) / sizeof(char *); i++) {
+    for (unsigned int i = 0; i < sizeof(quadkeys) / sizeof(char *); i++) {
         futile_coord_s coord;
         futile_quadkey_to_coord(quadkeys[i], strlen(quadkeys[i]), &coord);
         g_assert_cmpint(expected_coords[i].x, ==, coord.x);
