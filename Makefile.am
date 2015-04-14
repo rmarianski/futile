@@ -2,7 +2,7 @@ lib_LTLIBRARIES = libfutile.la
 
 ACLOCAL_AMFLAGS = -I m4
 
-AM_CFLAGS = -Wall -Wextra
+AM_CFLAGS = -Wall
 
 pkginclude_HEADERS = src/coord.h src/geo.h src/tile.h
 libfutile_la_SOURCES = src/coord.c src/geo.c src/tile.c
