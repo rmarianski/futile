@@ -13,7 +13,7 @@ test_coord_SOURCES = test/test-coord.c $(libfutile_la_SOURCES)
 test_geo_SOURCES = test/test-geo.c $(libfutile_la_SOURCES)
 test_tile_SOURCES = test/test-tile.c $(libfutile_la_SOURCES)
 
-testing_cflags = -I$(top_srcdir)/src `pkg-config --cflags glib-2.0`
+testing_cflags = $(AM_CFLAGS) -I$(top_srcdir)/src `pkg-config --cflags glib-2.0`
 testing_ldflags = `pkg-config --libs glib-2.0`
 test_coord_CFLAGS = $(testing_cflags)
 test_coord_LDFLAGS = $(testing_ldflags)
