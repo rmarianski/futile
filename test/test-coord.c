@@ -170,7 +170,7 @@ void test_coord_equal() {
     }
 }
 
-void _test_coord_marshall_up_to_zoom_5(futile_coord_s *coord, void *userdata) {
+void _test_coord_marshall_up_to_zoom_5(futile_coord_s *coord, void __unused *userdata) {
     futile_coord_s result;
     uint64_t x = futile_coord_marshall_int(coord);
     futile_coord_unmarshall_int(x, &result);

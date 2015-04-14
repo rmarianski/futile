@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "tile.h"
 
-void _for_zoom_range(futile_coord_s *c, void *userdata) {
+void _for_zoom_range(futile_coord_s __unused *c, void *userdata) {
     int *n = userdata;
     *n = *n + 1;
 }
@@ -44,7 +44,7 @@ struct _tile_bounds_userdata {
     int n;
 };
 
-void _for_tile_bounds_test(futile_coord_s *coord, void *userdata) {
+void _for_tile_bounds_test(futile_coord_s __unused *coord, void *userdata) {
     struct _tile_bounds_userdata *data = userdata;
     data->n += 1;
 }
