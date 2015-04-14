@@ -21,3 +21,8 @@ test_geo_CFLAGS = $(testing_cflags)
 test_geo_LDFLAGS = $(testing_ldflags)
 test_tile_CFLAGS = $(testing_cflags)
 test_tile_LDFLAGS = $(testing_ldflags)
+
+.PHONY: doc
+doc:
+	test -d doc || mkdir doc
+	doxygen doxygen.cfg

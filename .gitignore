@@ -35,3 +35,4 @@ test/.dirstamp
 src/.deps/
 src/.dirstamp
 *.lo
+doc/
