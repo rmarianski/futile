@@ -7,7 +7,12 @@ functionality surrounding tile operations. It assumes an x/y/z gridset.
 
 A gnu c compiler is required, but no other libraries are necessary to build.
 
+Do the dance:
+
+    ./autogen.sh
+    ./configure
     make
+    make install
 
 glib is required to run the tests.
 
@@ -22,7 +27,7 @@ To run the tests:
 ```
 #include <stdio.h>
 #include <assert.h>
-#include "coord.h"
+#include <futile/coord.h>
 
 int main() {
     futile_coord_s coord = {.x=1, .y=2, .z=3};
