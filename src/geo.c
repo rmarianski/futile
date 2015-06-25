@@ -26,7 +26,8 @@ extern void futile_explode_bounds(futile_bounds_s *bounds, double *out_minx, dou
 }
 
 // http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
-extern void futile_num_to_deg(futile_coord_s *coord, double *out_lng_deg, double *out_lat_deg) {
+// TODO make output into point
+extern void futile_coord_to_lnglat(futile_coord_s *coord, double *out_lng_deg, double *out_lat_deg) {
     double n = pow(2, coord->z);
     double lng_deg = coord->x / n * 360.0 - 180.0;
     double lat_rad = atan(sinh(M_PI * (1 - 2 * coord->y / n)));
@@ -36,7 +37,8 @@ extern void futile_num_to_deg(futile_coord_s *coord, double *out_lng_deg, double
 }
 
 // http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
-extern void futile_deg_to_num(double lng_deg, double lat_deg, int zoom, futile_coord_s *out) {
+// make input point
+extern void futile_lnglat_to_coord(double lng_deg, double lat_deg, int zoom, futile_coord_s *out) {
     double lat_rad = degrees_to_radians(lat_deg);
     double n = pow(2.0, zoom);
     out->x = (lng_deg + 180.0) / 360.0 * n;
@@ -51,8 +53,8 @@ extern void futile_coord_to_bounds(futile_coord_s *coord, futile_bounds_s *out) 
         .y=coord->y + 1,
         .z=coord->z
     };
-    futile_num_to_deg(coord, &topleft_lng, &topleft_lat);
-    futile_num_to_deg(&coord_bottomright, &bottomright_lng, &bottomright_lat);
+    futile_coord_to_lnglat(coord, &topleft_lng, &topleft_lat);
+    futile_coord_to_lnglat(&coord_bottomright, &bottomright_lng, &bottomright_lat);
     double minx = topleft_lng;
     double miny = bottomright_lat;
     double maxx = bottomright_lng;
@@ -67,16 +69,12 @@ extern void futile_coord_to_bounds(futile_coord_s *coord, futile_bounds_s *out) 
 }
 
 extern int futile_bounds_to_coords(futile_bounds_s *bounds, int zoom, futile_coord_s out_coords[]) {
-    double minx, miny, maxx, maxy;
-    futile_explode_bounds(bounds, &minx, &miny, &maxx, &maxy);
-    double topleft_lng = minx;
-    double topleft_lat = maxy;
-    double bottomright_lat = miny;
-    double bottomright_lng = maxx;
+    double topleft_lng, topleft_lat, bottomright_lng, bottomright_lat;
+    futile_explode_bounds(bounds, &topleft_lng, &bottomright_lat, &bottomright_lng, &topleft_lat);
 
     futile_coord_s topleft_coord, bottomright_coord;
-    futile_deg_to_num(topleft_lng, topleft_lat, zoom, &topleft_coord);
-    futile_deg_to_num(bottomright_lng, bottomright_lat, zoom, &bottomright_coord);
+    futile_lnglat_to_coord(topleft_lng, topleft_lat, zoom, &topleft_coord);
+    futile_lnglat_to_coord(bottomright_lng, bottomright_lat, zoom, &bottomright_coord);
 
     // clamp max values
     int maxval = pow(2, zoom) - 1;

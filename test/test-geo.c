@@ -18,20 +18,20 @@ static int float_cmp(double x, double y, double eps) {
     return abs(x - y) < eps;
 }
 
-void test_num_to_deg() {
+void test_coord_to_lnglat() {
     futile_coord_s c = {.x=19295, .y=24641, .z=16};
     double lng, lat;
-    futile_num_to_deg(&c, &lng, &lat);
+    futile_coord_to_lnglat(&c, &lng, &lat);
     g_assert(float_cmp(lng, -74.0093994140625, 0.00001));
     g_assert(float_cmp(lat, 40.709792012434946, 0.00001));
 }
 
-void test_deg_to_num() {
+void test_lnglat_to_coord() {
     futile_coord_s c;
     double lng = -74.0093994140625;
     double lat = 40.709792012434946;
     int zoom = 16;
-    futile_deg_to_num(lng, lat, zoom, &c);
+    futile_lnglat_to_coord(lng, lat, zoom, &c);
     g_assert_cmpint(zoom,  ==, c.z);
     g_assert_cmpint(19295, ==, c.x);
     g_assert_cmpint(24641, ==, c.y);
@@ -192,8 +192,8 @@ int main(int argc, char *argv[]) {
     g_test_init(&argc, &argv, NULL);
 
     g_test_add_func("/geo/explode-bounds", test_explode_bounds);
-    g_test_add_func("/geo/num->deg", test_num_to_deg);
-    g_test_add_func("/geo/deg->num", test_deg_to_num);
+    g_test_add_func("/geo/coord->lnglat", test_coord_to_lnglat);
+    g_test_add_func("/geo/lnglat->coord", test_lnglat_to_coord);
     g_test_add_func("/geo/coord->bounds", test_coord_to_bounds);
     g_test_add_func("/geo/bounds->coords", test_bounds_to_multiple_coords);
     g_test_add_func("/geo/bounds->coord", test_bounds_to_single_coord);

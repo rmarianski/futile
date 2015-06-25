@@ -49,19 +49,19 @@ void futile_explode_bounds(futile_bounds_s *bounds, double *out_minx, double *ou
 /**
  * @brief Convert a coordinate to lng/lat
  *
- * futile_num_to_deg takes an input coordinate, and converts that to
+ * futile_coord_to_lnglat takes an input coordinate, and converts that to
  * lng lat doubles, which are in degrees.
  *
  * @param[in] coord Input coordinate
  * @param[out] out_lng_deg Output longitude
  * @param[out] out_lat_deg Output latitude
  */
-void futile_num_to_deg(futile_coord_s *coord, double *out_lng_deg, double *out_lat_deg);
+void futile_coord_to_lnglat(futile_coord_s *coord, double *out_lng_deg, double *out_lat_deg);
 
 /**
  * @brief Convert a lng/lat to a coordinate
  *
- * futile_deg_to_num takes an input longitude and latitude in degrees,
+ * futile_lnglat_to_coord takes an input longitude and latitude in degrees,
  * a zoom, and converts those to a coordinate.
  *
  * @param[in] lng_deg Input longitude
@@ -69,7 +69,7 @@ void futile_num_to_deg(futile_coord_s *coord, double *out_lng_deg, double *out_l
  * @param[in] zoom Input zoom
  * @param[out] out Output coordinate
  */
-void futile_deg_to_num(double lng_deg, double lat_deg, int zoom, futile_coord_s *out);
+void futile_lnglat_to_coord(double lng_deg, double lat_deg, int zoom, futile_coord_s *out);
 
 /**
  * @brief Generate a bounding box in 4326 to encompass the coordinate
