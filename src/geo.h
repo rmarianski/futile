@@ -151,6 +151,38 @@ void futile_coord_to_mercator(futile_coord_s *in, futile_point_s *out);
 void futile_mercator_to_coord(futile_point_s *in, int zoom, futile_coord_s *out);
 
 /**
+ * @brief Convert a coordinate to bounds in mercator meters
+ *
+ * futile_coord_to_mercator_bounds will convert a coordinate to bounds
+ * in mercator meters.
+ *
+ * @param[in] in Input coordinate
+ * @param[out] out Output bounds in mercator meters
+ */
+void futile_coord_to_mercator_bounds(futile_coord_s *in, futile_bounds_s *out);
+
+/**
+ * @brief Convert bounds in mercator meters to a coordinate
+ *
+ * futile_mercator_bounds_to_coords will convert bounds in mercator
+ * meters to one or more coordinates. If a single coordinate suffices,
+ * only one will be updated. If more than one coordinate is required
+ * to cover the given bounds at the specified zoom level, 2
+ * coordinates will be updated. The 2 coords will be the topleft, and
+ * bottom right respectively. The number of coordinates that were
+ * updated is returned.
+ *
+ * Note that the memory pointed to by out should have enough
+ * space to update 2 coordinates.
+ *
+ * @param[in] in Input bounds in mercator meters
+ * @param[in] zoom Zoom level
+ * @param[out] out Output coordinate(s) (space for 2 coords)
+ * @return Number of coordinates updated
+ */
+int futile_mercator_bounds_to_coords(futile_bounds_s *in, int zoom, futile_coord_s *out);
+
+/**
  * @brief Convert a coord to its quadkey representation
  *
  * futile_coord_to_quadkey takes an input coordinate, and generates

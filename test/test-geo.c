@@ -123,6 +123,29 @@ void test_coord_mercator_roundtrip() {
     g_assert_cmpint(coord.z, ==, coord_rountrip.z);
 }
 
+void test_coord_mercator_to_bounds() {
+    futile_coord_s coord = {.x=38600, .y=49295, .z=17};
+    futile_bounds_s bounds;
+    futile_coord_to_mercator_bounds(&coord, &bounds);
+    g_assert(float_cmp(-8235631.175558, bounds.minx, 0.00001));
+    g_assert(float_cmp(4965349.357405, bounds.miny, 0.00001));
+    g_assert(float_cmp(-8235325.427445, bounds.maxx, 0.00001));
+    g_assert(float_cmp(4965655.105518, bounds.maxy, 0.00001));
+}
+
+void test_mercator_bounds_to_coords() {
+    futile_bounds_s bounds = {-8235631.175558, 4965349.357405, -8235325.427445, 4965655.105518};
+    futile_coord_s coords[2];
+    int n = futile_mercator_bounds_to_coords(&bounds, 17, coords);
+    g_assert_cmpint(n, ==, 2);
+    g_assert_cmpint(coords[0].x, ==, 38600);
+    g_assert_cmpint(coords[0].y, ==, 49295);
+    g_assert_cmpint(coords[0].z, ==, 17);
+    g_assert_cmpint(coords[1].x, ==, 38600);
+    g_assert_cmpint(coords[1].y, ==, 49296);
+    g_assert_cmpint(coords[1].z, ==, 17);
+}
+
 void test_coord_to_quadkey() {
     futile_coord_s coords[] = {
         {.x=2, .y=2, .z=3},
@@ -179,6 +202,8 @@ int main(int argc, char *argv[]) {
     g_test_add_func("/geo/coord->mercator", test_coord_to_mercator);
     g_test_add_func("/geo/mercator->coord", test_mercator_to_coord);
     g_test_add_func("/geo/mercator-coord-roundtrip", test_coord_mercator_roundtrip);
+    g_test_add_func("/geo/coord->mercator-bounds", test_coord_mercator_to_bounds);
+    g_test_add_func("/geo/mercator-bounds->coord", test_mercator_bounds_to_coords);
     g_test_add_func("/geo/coord->quadkey", test_coord_to_quadkey);
     g_test_add_func("/geo/quadkey->coord", test_quadkey_to_coord);
 

@@ -6,6 +6,10 @@ static double min(double a, double b) {
     return a < b ? a : b;
 }
 
+static double max(double a, double b) {
+    return a > b ? a : b;
+}
+
 static double radians_to_degrees(double radians) {
     return radians * 180 / M_PI;
 }
@@ -91,8 +95,9 @@ extern int futile_bounds_to_coords(futile_bounds_s *bounds, int zoom, futile_coo
     }
 }
 
-static double half_circumference_meters = 20037508.342789244;
-static double circumference_meters = 40075016.685578488;
+// radius of earth in meters is 6378137
+// static double circumference_meters = 40075016.685578487813;
+static double half_circumference_meters = 20037508.342789243907;
 
 extern void futile_mercator_to_wgs84(futile_point_s *in, futile_point_s *out) {
     double x = in->x, y = in->y;
@@ -123,15 +128,59 @@ extern void futile_wgs84_to_mercator(futile_point_s *in, futile_point_s *out) {
     out->y = y;
 }
 
+// log(circumference_meters) / log(2)
+double zoom_with_mercator_meters = 25.256199785270;
+
 extern void futile_coord_to_mercator(futile_coord_s *in, futile_point_s *out) {
-    out->x =   in->x * circumference_meters / pow(2, in->z) - half_circumference_meters;
-    out->y = -(in->y * circumference_meters / pow(2, in->z) - half_circumference_meters);
+    // update the source x, y values to their corresponding values at
+    // the zoom where mercator units are in meters
+    double x = in->x * pow(2, zoom_with_mercator_meters - in->z);
+    double y = in->y * pow(2, zoom_with_mercator_meters - in->z);
+
+    // adjust for coordinate system
+    out->x = x - half_circumference_meters;
+    // y grid starts from 0 at top and goes down
+    out->y = half_circumference_meters - y;
 }
 
 extern void futile_mercator_to_coord(futile_point_s *in, int zoom, futile_coord_s *out) {
-    out->x = floor(  (in->x  + half_circumference_meters) / (circumference_meters / pow(2, zoom)));
-    out->y = floor((-(in->y) + half_circumference_meters) / (circumference_meters / pow(2, zoom)));
+    // adjust for coordinate system
+    double x = in->x + half_circumference_meters;
+    // y grid starts from 0 at top and goes down
+    double y = half_circumference_meters - in->y;
+
+    out->x = x * pow(2, zoom - zoom_with_mercator_meters);
+    out->y = y * pow(2, zoom - zoom_with_mercator_meters);
     out->z = zoom;
+}
+
+extern void futile_coord_to_mercator_bounds(futile_coord_s *in, futile_bounds_s *out) {
+    futile_coord_s coord_bottom_right = {.x=in->x + 1, .y=in->y + 1, in->z};
+    futile_point_s merc_topleft, merc_bottomright;
+    futile_coord_to_mercator(in, &merc_topleft);
+    futile_coord_to_mercator(&coord_bottom_right, &merc_bottomright);
+    out->minx = min(merc_topleft.x, merc_bottomright.x);
+    out->miny = min(merc_topleft.y, merc_bottomright.y);
+    out->maxx = max(merc_topleft.x, merc_bottomright.x);
+    out->maxy = max(merc_topleft.y, merc_bottomright.y);
+}
+
+extern int futile_mercator_bounds_to_coords(futile_bounds_s *bounds, int zoom, futile_coord_s *out) {
+    double topleft_x, topleft_y, bottomright_x, bottomright_y;
+    futile_explode_bounds(bounds, &topleft_x, &bottomright_y, &bottomright_x, &topleft_y);
+    futile_point_s topleft_point = {topleft_x, topleft_y};
+    futile_point_s bottomright_point = {bottomright_x, bottomright_y};
+    futile_coord_s topleft_coord, bottomright_coord;
+    futile_mercator_to_coord(&topleft_point, zoom, &topleft_coord);
+    futile_mercator_to_coord(&bottomright_point, zoom, &bottomright_coord);
+    out[0] = topleft_coord;
+    if (topleft_coord.x == bottomright_coord.x &&
+        topleft_coord.y == bottomright_coord.y) {
+        return 1;
+    } else {
+        out[1] = bottomright_coord;
+        return 2;
+    }
 }
 
 extern void futile_coord_to_quadkey(futile_coord_s *coord, char *quadkey) {
