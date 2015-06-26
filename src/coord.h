@@ -25,11 +25,11 @@
  */
 typedef struct futile_coord_s {
     /** @brief coordinate x or column value */
-    unsigned int x;
+    uint32_t x;
     /** @brief coordinate y or row value */
-    unsigned int y;
+    uint32_t y;
     /** @brief coordinate z or zoom value */
-    unsigned int z;
+    uint32_t z;
 } futile_coord_s;
 
 /**
