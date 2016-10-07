@@ -1,18 +1,13 @@
 # Futile
 
-Futile (also pronounced "eff you" tile) is a library to provide some basic
-functionality surrounding tile operations. It assumes an x/y/z gridset.
+Futile is a library to provide some basic functionality surrounding tile operations. It assumes an x/y/z gridset.
 
 ## Installation
 
 A gnu c compiler is required, but no other libraries are necessary to build.
 
-Do the dance:
-
-    ./autogen.sh
-    ./configure
+To build:
     make
-    make install
 
 glib is required to run the tests.
 
@@ -22,12 +17,17 @@ To run the tests:
 
     make check
 
+To install headers and libraries:
+
+    make install DESTDIR=${HOME}/opt
+
 ## Example usage
 
 ```
+cat > test.c << EOF
 #include <stdio.h>
 #include <assert.h>
-#include <futile/coord.h>
+#include <futile.h>
 
 int main() {
     futile_coord_s coord = {.x=1, .y=2, .z=3};
@@ -36,8 +36,7 @@ int main() {
     printf("%s\n", coord_str);
     return 0;
 }
+EOF
+gcc test.c -lfutile -lm
+./a.out
 ```
-
-## Documentation
-
-    make doc
