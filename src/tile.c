@@ -15,6 +15,58 @@ extern void futile_for_zoom_range(unsigned int zoom_start, unsigned int zoom_unt
     }
 }
 
+extern bool futile_for_zoom_range_array(futile_coord_cursor_s *cursor, futile_coord_group_s *group) {
+    unsigned int coord_index = 0;
+    unsigned int x = cursor->x;
+    unsigned int y = cursor->y;
+    unsigned int z = cursor->z;
+    bool is_group_complete = true;
+    for (; is_group_complete && z <= cursor->zoom_until; z++) {
+        unsigned int limit = pow(2, z);
+        for (; is_group_complete && x < limit; x++) {
+            for (; is_group_complete && y < limit; y++) {
+                if (coord_index >= group->n) {
+                    is_group_complete = false;
+                    cursor->x = x;
+                    cursor->y = y;
+                    cursor->z = z;
+                    break;
+                }
+                futile_coord_s coord = {.x = x, .y = y, .z = z};
+                group->coords[coord_index++] = coord;
+            }
+            y = 0;
+        }
+        x = 0;
+    }
+    group->n = coord_index;
+    return is_group_complete;
+}
+
+// TODO test
+extern void futile_for_coord_zoom_range(unsigned int start_x, unsigned int start_y, unsigned int end_x, unsigned int end_y, unsigned int start_zoom, unsigned int end_zoom, futile_coord_fn for_coord, void *userdata) {
+    unsigned int zoom_multiplier = 1;
+    // all the "end" parameters are inclusive
+    // bump them all up here to make them exclusive for range
+    end_x += 1;
+    end_y += 1;
+    end_zoom += 1;
+    for (unsigned int zoom_index = start_zoom; zoom_index < end_zoom; zoom_index++) {
+        for (unsigned int x_index = start_x * zoom_multiplier;
+             x_index < end_x * zoom_multiplier;
+             x_index++) {
+            for (unsigned int y_index = start_y * zoom_multiplier;
+                 y_index < end_y * zoom_multiplier;
+                 y_index++) {
+                futile_coord_s coord = {.x = x_index, .y = y_index, .z = zoom_index};
+                for_coord(&coord, userdata);
+            }
+        }
+        zoom_multiplier *= 2;
+    }
+}
+
+
 extern void futile_for_coord_parents(futile_coord_s *start, unsigned int zoom_until, futile_coord_fn for_coord, void *userdata) {
     futile_coord_s coord = *start;
     while (coord.z >= zoom_until) {
@@ -58,4 +110,7 @@ extern void futile_for_bounds(futile_bounds_s *bounds, unsigned int zoom_start, 
         start_x *= 2;
         until_x *= 2;
     }
+}
+
+void futile_for_zoom_range_group(futile_bounds_s *bounds, unsigned int zoom_start, unsigned int zoom_until, futile_coord_cursor_s *cursor, futile_coord_group_s *coords) {
 }

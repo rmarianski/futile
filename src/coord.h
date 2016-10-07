@@ -109,6 +109,16 @@ bool futile_coord_deserialize(char *str, futile_coord_s *out_coord);
 void futile_coord_print(futile_coord_s *coord, FILE *out);
 
 /**
+ * @brief Print coord to file object with newline
+ *
+ * futile_coord_println prints out the serialized coord into out with a newline.
+ *
+ * @param[in] coord Input coordinate
+ * @param[out] out File handle to write to
+ */
+void futile_coord_println(futile_coord_s *coord, FILE *out);
+
+/**
  * @brief Compare two coordinates
  *
  * futile_coord_cmp compares two coordinates. First the zooms are

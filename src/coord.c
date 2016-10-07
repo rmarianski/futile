@@ -45,12 +45,17 @@ extern bool futile_coord_serialize(futile_coord_s *coord, ssize_t n_out, char *o
 }
 
 extern bool futile_coord_deserialize(char *coord_str, futile_coord_s *out) {
-    int n = sscanf(coord_str, "%d/%d/%d", &out->z, &out->x, &out->y);
+    int n = sscanf(coord_str, "%10d/%10d/%10d", &out->z, &out->x, &out->y);
     return n == 3;
 }
 
 extern void futile_coord_print(futile_coord_s *coord, FILE *out) {
     fprintf(out, "%d/%d/%d", coord->z, coord->x, coord->y);
+}
+
+extern void futile_coord_println(futile_coord_s *coord, FILE *out) {
+    futile_coord_print(coord, out);
+    fputc('\n', out);
 }
 
 extern int futile_coord_cmp(futile_coord_s *lhs, futile_coord_s *rhs) {

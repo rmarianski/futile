@@ -39,6 +39,18 @@
  */
 typedef void (*futile_coord_fn)(futile_coord_s *coord, void *userdata);
 
+typedef struct {
+    unsigned int x;
+    unsigned int y;
+    unsigned int z;
+    unsigned int zoom_until;
+} futile_coord_cursor_s;
+
+typedef struct {
+    size_t n;
+    futile_coord_s *coords;
+} futile_coord_group_s;
+
 /**
  * @brief Visit coordinates in a given range
  *
@@ -51,6 +63,10 @@ typedef void (*futile_coord_fn)(futile_coord_s *coord, void *userdata);
  * @param[in] userdata Baton passed into callback function
  */
 void futile_for_zoom_range(unsigned int zoom_start, unsigned int zoom_until, futile_coord_fn for_coord, void *userdata);
+
+bool futile_for_zoom_range_array(futile_coord_cursor_s *cursor, futile_coord_group_s *group);
+
+void futile_for_coord_zoom_range(unsigned int start_x, unsigned int start_y, unsigned int end_x, unsigned int end_y, unsigned int start_zoom, unsigned int end_zoom, futile_coord_fn for_coord, void *userdata);
 
 /**
  * @brief Visit coordinate parents
