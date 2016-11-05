@@ -39,14 +39,32 @@ extern void futile_coord_children(futile_coord_s *coord, futile_coord_s *out_chi
     out_children[3].y++;
 }
 
+extern bool futile_coord_is_valid(futile_coord_s *coord) {
+    bool result = false;
+    int max_row_col = pow(2, coord->z);
+    if (coord->x < max_row_col && coord->y < max_row_col) {
+        result = true;
+    }
+    return result;
+}
+
 extern bool futile_coord_serialize(futile_coord_s *coord, ssize_t n_out, char *out) {
     int n_required = snprintf(out, n_out, "%d/%d/%d", coord->z, coord->x, coord->y);
     return n_required <= n_out;
 }
 
 extern bool futile_coord_deserialize(char *coord_str, futile_coord_s *out) {
-    int n = sscanf(coord_str, "%10d/%10d/%10d", &out->z, &out->x, &out->y);
-    return n == 3;
+    bool result = false;
+    int x, y, z;
+    if (sscanf(coord_str, "%10d/%10d/%10d", &z, &x, &y) == 3) {
+        if (z >= 0 && x >= 0 && y >= 0) {
+            out->z = z;
+            out->x = x;
+            out->y = y;
+            result = futile_coord_is_valid(out);
+        }
+    }
+    return result;
 }
 
 extern void futile_coord_print(futile_coord_s *coord, FILE *out) {

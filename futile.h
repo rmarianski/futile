@@ -457,4 +457,6 @@ long futile_n_for_zoom(unsigned int zoom);
  */
 void futile_for_bounds(futile_bounds_s *bounds, unsigned int zoom_start, unsigned int zoom_until, futile_coord_fn for_coord, void *userdata);
 
+bool futile_coord_is_valid(futile_coord_s *coord);
+
 #endif

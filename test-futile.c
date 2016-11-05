@@ -73,6 +73,16 @@ void test_coord_children() {
     g_assert_cmpint(3, ==, children[3].y);
 }
 
+void test_coord_not_valid() {
+    futile_coord_s c = {.x=2, .y=2, .z=1};
+    g_assert(!futile_coord_is_valid(&c));
+}
+
+void test_coord_valid() {
+    futile_coord_s c = {.x=2, .y=2, .z=2};
+    g_assert(futile_coord_is_valid(&c));
+}
+
 void test_coord_serialize_ok() {
     futile_coord_s c = {.x=1, .y=2, .z=3};
     char str[16];
@@ -94,6 +104,18 @@ void test_coord_deserialize_fail() {
 
 void test_coord_deserialize_fail_close() {
     char *s = "1/2/garbage";
+    futile_coord_s c;
+    g_assert(!futile_coord_deserialize(s, &c));
+}
+
+void test_coord_deserialize_fail_out_of_bounds() {
+    char *s = "1/2/2";
+    futile_coord_s c;
+    g_assert(!futile_coord_deserialize(s, &c));
+}
+
+void test_coord_deserialize_fail_neg() {
+    char *s = "1/1/-1";
     futile_coord_s c;
     g_assert(!futile_coord_deserialize(s, &c));
 }
@@ -575,10 +597,14 @@ int main(int argc, char *argv[]) {
     g_test_add_func("/coord/coord-parent-valid", test_coord_parent_valid);
     g_test_add_func("/coord/coord-parent-valid", test_coord_parent_inplace);
     g_test_add_func("/coord/coord-children", test_coord_children);
+    g_test_add_func("/coord/coord-not-valid", test_coord_not_valid);
+    g_test_add_func("/coord/coord-valid", test_coord_valid);
     g_test_add_func("/coord/serialize-ok", test_coord_serialize_ok);
     g_test_add_func("/coord/serialize-fail", test_coord_serialize_fail);
     g_test_add_func("/coord/deserialize-fail", test_coord_deserialize_fail);
     g_test_add_func("/coord/deserialize-fail-close", test_coord_deserialize_fail_close);
+    g_test_add_func("/coord/deserialize-fail-out-of-bounds", test_coord_deserialize_fail_out_of_bounds);
+    g_test_add_func("/coord/deserialize-fail-neg", test_coord_deserialize_fail_neg);
     g_test_add_func("/coord/deserialize-ok", test_coord_deserialize_ok);
     g_test_add_func("/coord/deserialize-ok-trailing-newline", test_coord_deserialize_ok_trailing_newline);
     g_test_add_func("/coord/coord_print", test_coord_print);
