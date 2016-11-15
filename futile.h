@@ -235,10 +235,9 @@ FUTILE_DEF void futile_explode_bounds(futile_bounds_s *bounds, double *out_minx,
  * lng lat doubles, which are in degrees.
  *
  * @param[in] coord Input coordinate
- * @param[out] out_lng_deg Output longitude
- * @param[out] out_lat_deg Output latitude
+ * @param[out] out Output longitude latitude point
  */
-FUTILE_DEF void futile_coord_to_lnglat(futile_coord_s *coord, double *out_lng_deg, double *out_lat_deg);
+FUTILE_DEF void futile_coord_to_lnglat(futile_coord_s *coord, futile_point_s *out);
 
 /**
  * @brief Convert a lng/lat to a coordinate
@@ -246,12 +245,11 @@ FUTILE_DEF void futile_coord_to_lnglat(futile_coord_s *coord, double *out_lng_de
  * futile_lnglat_to_coord takes an input longitude and latitude in degrees,
  * a zoom, and converts those to a coordinate.
  *
- * @param[in] lng_deg Input longitude
- * @param[in] lat_deg Input latitude
+ * @param[in] lnglat Input longitude latitude
  * @param[in] zoom Input zoom
  * @param[out] out Output coordinate
  */
-FUTILE_DEF void futile_lnglat_to_coord(double lng_deg, double lat_deg, int zoom, futile_coord_s *out);
+FUTILE_DEF void futile_lnglat_to_coord(futile_point_s *lnglat, int zoom, futile_coord_s *out);
 
 /**
  * @brief Generate a bounding box in 4326 to encompass the coordinate
@@ -290,24 +288,24 @@ FUTILE_DEF int futile_bounds_to_coords(futile_bounds_s *bounds, int zoom, futile
 /**
  * @brief Reproject a 3857 mercator point to 4326 lng/lat
  *
- * futile_mercator_to_wgs84 will reproject a 3857 mercator point to a
+ * futile_mercator_to_lnglat will reproject a 3857 mercator point to a
  * 4326 lng/lat point.
  *
  * @param[in] in Input point in 3857 mercator
  * @param[out] out Output point in 4326 lng/lat
  */
-FUTILE_DEF void futile_mercator_to_wgs84(futile_point_s *in, futile_point_s *out);
+FUTILE_DEF void futile_mercator_to_lnglat(futile_point_s *in, futile_point_s *out);
 
 /**
  * @brief Reproject a point in 4326 lng/lat to 3857 mercator
  *
- * futile_wgs84_to_mercator will reproject a 4326 lng/lat point to a
+ * futile_lnglat_to_mercator will reproject a 4326 lng/lat point to a
  * 3857 mercator point.
  *
  * @param[in] in Input point in 4326 lng/lat
  * @param[out] out Output point in 3857 mercator
  */
-FUTILE_DEF void futile_wgs84_to_mercator(futile_point_s *in, futile_point_s *out);
+FUTILE_DEF void futile_lnglat_to_mercator(futile_point_s *in, futile_point_s *out);
 
 /**
  * @brief Convert a coordinate to a 3857 mercator point
@@ -634,19 +632,21 @@ FUTILE_DEF void futile_explode_bounds(futile_bounds_s *bounds, double *out_minx,
 }
 
 // http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
-// TODO make output into point
-FUTILE_DEF void futile_coord_to_lnglat(futile_coord_s *coord, double *out_lng_deg, double *out_lat_deg) {
+FUTILE_DEF void futile_coord_to_lnglat(futile_coord_s *coord, futile_point_s *out) {
     double n = pow(2, coord->z);
     double lng_deg = coord->x / n * 360.0 - 180.0;
     double lat_rad = atan(sinh(M_PI * (1 - 2 * coord->y / n)));
     double lat_deg = radians_to_degrees(lat_rad);
-    *out_lng_deg = lng_deg;
-    *out_lat_deg = lat_deg;
+    out->x = lng_deg;
+    out->y = lat_deg;
 }
 
 // http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
 // make input point
-FUTILE_DEF void futile_lnglat_to_coord(double lng_deg, double lat_deg, int zoom, futile_coord_s *out) {
+FUTILE_DEF void futile_lnglat_to_coord(futile_point_s *lnglat, int zoom, futile_coord_s *out) {
+    double lng_deg = lnglat->x;
+    double lat_deg = lnglat->y;
+
     double lat_rad = degrees_to_radians(lat_deg);
     double n = pow(2.0, zoom);
     out->x = (lng_deg + 180.0) / 360.0 * n;
@@ -655,18 +655,18 @@ FUTILE_DEF void futile_lnglat_to_coord(double lng_deg, double lat_deg, int zoom,
 }
 
 FUTILE_DEF void futile_coord_to_bounds(futile_coord_s *coord, futile_bounds_s *out) {
-    double topleft_lng, topleft_lat, bottomright_lng, bottomright_lat;
+    futile_point_s topleft, bottomright;
     futile_coord_s coord_bottomright = {
         .x=coord->x + 1,
         .y=coord->y + 1,
         .z=coord->z
     };
-    futile_coord_to_lnglat(coord, &topleft_lng, &topleft_lat);
-    futile_coord_to_lnglat(&coord_bottomright, &bottomright_lng, &bottomright_lat);
-    double minx = topleft_lng;
-    double miny = bottomright_lat;
-    double maxx = bottomright_lng;
-    double maxy = topleft_lat;
+    futile_coord_to_lnglat(coord, &topleft);
+    futile_coord_to_lnglat(&coord_bottomright, &bottomright);
+    double minx = topleft.x;
+    double miny = bottomright.y;
+    double maxx = bottomright.x;
+    double maxy = topleft.y;
 
     // coord_to_bounds is used to calculate boxes that could be off the grid
     // clamp the max values in that scenario
@@ -677,12 +677,12 @@ FUTILE_DEF void futile_coord_to_bounds(futile_coord_s *coord, futile_bounds_s *o
 }
 
 FUTILE_DEF int futile_bounds_to_coords(futile_bounds_s *bounds, int zoom, futile_coord_s out_coords[]) {
-    double topleft_lng, topleft_lat, bottomright_lng, bottomright_lat;
-    futile_explode_bounds(bounds, &topleft_lng, &bottomright_lat, &bottomright_lng, &topleft_lat);
+    futile_point_s topleft, bottomright;
+    futile_explode_bounds(bounds, &topleft.x, &bottomright.y, &bottomright.x, &topleft.y);
 
     futile_coord_s topleft_coord, bottomright_coord;
-    futile_lnglat_to_coord(topleft_lng, topleft_lat, zoom, &topleft_coord);
-    futile_lnglat_to_coord(bottomright_lng, bottomright_lat, zoom, &bottomright_coord);
+    futile_lnglat_to_coord(&topleft, zoom, &topleft_coord);
+    futile_lnglat_to_coord(&bottomright, zoom, &bottomright_coord);
 
     // clamp max values
     int maxval = pow(2, zoom) - 1;
@@ -705,7 +705,7 @@ FUTILE_DEF int futile_bounds_to_coords(futile_bounds_s *bounds, int zoom, futile
 // static double circumference_meters = 40075016.685578487813;
 static double half_circumference_meters = 20037508.342789243907;
 
-FUTILE_DEF void futile_mercator_to_wgs84(futile_point_s *in, futile_point_s *out) {
+FUTILE_DEF void futile_mercator_to_lnglat(futile_point_s *in, futile_point_s *out) {
     double x = in->x, y = in->y;
 
     x /= half_circumference_meters;
@@ -720,7 +720,7 @@ FUTILE_DEF void futile_mercator_to_wgs84(futile_point_s *in, futile_point_s *out
     out->y = y;
 }
 
-FUTILE_DEF void futile_wgs84_to_mercator(futile_point_s *in, futile_point_s *out) {
+FUTILE_DEF void futile_lnglat_to_mercator(futile_point_s *in, futile_point_s *out) {
     double x = in->x, y = in->y;
 
     // Latitude

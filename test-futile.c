@@ -269,18 +269,17 @@ static int float_cmp(double x, double y, double eps) {
 
 void test_coord_to_lnglat() {
     futile_coord_s c = {.x=19295, .y=24641, .z=16};
-    double lng, lat;
-    futile_coord_to_lnglat(&c, &lng, &lat);
-    g_assert(float_cmp(lng, -74.0093994140625, 0.00001));
-    g_assert(float_cmp(lat, 40.709792012434946, 0.00001));
+    futile_point_s lnglat;
+    futile_coord_to_lnglat(&c, &lnglat);
+    g_assert(float_cmp(lnglat.x, -74.0093994140625, 0.00001));
+    g_assert(float_cmp(lnglat.y, 40.709792012434946, 0.00001));
 }
 
 void test_lnglat_to_coord() {
     futile_coord_s c;
-    double lng = -74.0093994140625;
-    double lat = 40.709792012434946;
+    futile_point_s lnglat = {.x=-74.0093994140625, .y= 40.709792012434946};
     int zoom = 16;
-    futile_lnglat_to_coord(lng, lat, zoom, &c);
+    futile_lnglat_to_coord(&lnglat, zoom, &c);
     g_assert_cmpint(zoom,  ==, c.z);
     g_assert_cmpint(19295, ==, c.x);
     g_assert_cmpint(24641, ==, c.y);
@@ -329,16 +328,16 @@ void test_bounds_to_single_coord() {
 
 void test_mercator_to_wgs84() {
     futile_point_s merc = {.x=-8233978.22, .y=4980225.91};
-    futile_point_s latlng;
-    futile_mercator_to_wgs84(&merc, &latlng);
-    g_assert(float_cmp(-73.96708488464355, latlng.x, 0.00001));
-    g_assert(float_cmp(40.781906259287, latlng.y, 0.00001));
+    futile_point_s lnglat;
+    futile_mercator_to_lnglat(&merc, &lnglat);
+    g_assert(float_cmp(-73.96708488464355, lnglat.x, 0.00001));
+    g_assert(float_cmp(40.781906259287, lnglat.y, 0.00001));
 }
 
 void test_wgs84_to_mercator() {
-    futile_point_s latlng = {.x=-73.96708488464355, .y=40.781906259287};
+    futile_point_s lnglat = {.x=-73.96708488464355, .y=40.781906259287};
     futile_point_s merc;
-    futile_wgs84_to_mercator(&latlng, &merc);
+    futile_lnglat_to_mercator(&lnglat, &merc);
     g_assert(float_cmp(-8233978.22, merc.x, 0.00001));
     g_assert(float_cmp(4980225.91, merc.y, 0.00001));
 }
