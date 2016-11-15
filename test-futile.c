@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <glib.h>
 #include <string.h>
+#define FUTILE_IMPLEMENTATION 1
+#define FUTILE_STATIC 1
 #include "futile.h"
 
 void test_coord_zoom_down_one() {
@@ -427,7 +429,7 @@ void test_quadkey_to_coord() {
         {.x=5, .y=0, .z=3}
     };
     for (unsigned int i = 0; i < sizeof(quadkeys) / sizeof(char *); i++) {
-        futile_coord_s coord;
+        futile_coord_s coord = {};
         futile_quadkey_to_coord(quadkeys[i], strlen(quadkeys[i]), &coord);
         g_assert_cmpint(expected_coords[i].x, ==, coord.x);
         g_assert_cmpint(expected_coords[i].y, ==, coord.y);
