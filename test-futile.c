@@ -553,6 +553,17 @@ void test_tile_for_bounds() {
     g_assert_cmpint(13, ==, userdata.n);
 }
 
+void test_tile_for_bounds_low_zooms() {
+    double minx = -1.115;
+    double miny = 50.941;
+    double maxx = 0.895;
+    double maxy = 51.984;
+    futile_bounds_s bounds = {minx, miny, maxx, maxy};
+    struct _tile_bounds_userdata userdata = {};
+    futile_for_bounds(&bounds, 0, 5, _for_tile_bounds_test, &userdata);
+    g_assert_cmpint(11, ==, userdata.n);
+}
+
 void noop(futile_coord_s *coord, void *ignored) {
 }
 
@@ -639,6 +650,7 @@ int main(int argc, char *argv[]) {
     g_test_add_func("/tile/coord-parents", test_tile_parents);
     g_test_add_func("/tile/n-for-zoom", test_tile_n_for_zoom);
     g_test_add_func("/tile/for-tile/bounds", test_tile_for_bounds);
+    g_test_add_func("/tile/for-tile/bounds/low-zooms", test_tile_for_bounds_low_zooms);
 
     // g_test_add_func("/timing/for-zoom-range-array", test_timing_for_zoom_range_array);
 

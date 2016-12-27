@@ -283,7 +283,7 @@ FUTILE_DEF void futile_coord_to_bounds(futile_coord_s *coord, futile_bounds_s *o
  * @param[out] out_coords Output coordinate(s) (space for 2 coords)
  * @return Number of coordinates updated
  */
-FUTILE_DEF int futile_bounds_to_coords(futile_bounds_s *bounds, int zoom, futile_coord_s *out_coords);
+FUTILE_DEF unsigned int futile_bounds_to_coords(futile_bounds_s *bounds, int zoom, futile_coord_s *out_coords);
 
 /**
  * @brief Reproject a 3857 mercator point to 4326 lng/lat
@@ -676,7 +676,7 @@ FUTILE_DEF void futile_coord_to_bounds(futile_coord_s *coord, futile_bounds_s *o
     *out = (futile_bounds_s){minx, miny, maxx, maxy};
 }
 
-FUTILE_DEF int futile_bounds_to_coords(futile_bounds_s *bounds, int zoom, futile_coord_s out_coords[]) {
+FUTILE_DEF unsigned int futile_bounds_to_coords(futile_bounds_s *bounds, int zoom, futile_coord_s out_coords[]) {
     futile_point_s topleft, bottomright;
     futile_explode_bounds(bounds, &topleft.x, &bottomright.y, &bottomright.x, &topleft.y);
 
@@ -912,34 +912,29 @@ FUTILE_DEF long futile_n_for_zoom(unsigned int zoom) {
 }
 
 FUTILE_DEF void futile_for_bounds(futile_bounds_s *bounds, unsigned int zoom_start, unsigned int zoom_until, futile_coord_fn for_coord, void *userdata) {
+    unsigned int start_x, until_x, start_y, until_y, n_coords;
     futile_coord_s coords[2];
-    int n_coords = futile_bounds_to_coords(bounds, zoom_start, coords);
-    int start_x, until_x, start_y, until_y;
-    if (n_coords == 2) {
-        start_x = coords[0].x;
-        start_y = coords[0].y;
-        until_x = coords[1].x;
-        until_y = coords[1].y;
-    } else {
-        start_x = until_x = coords[0].x;
-        start_y = until_y = coords[0].y;
-    }
-    futile_coord_s coord_zoom = {.x=start_x, .y=start_y, .z=zoom_start};
+
     for (unsigned int z = zoom_start; z <= zoom_until; z++) {
-        futile_coord_s coord_row = coord_zoom;
-        for (int y = start_y; y <= until_y; y++) {
-            futile_coord_s coord_column = coord_row;
-            for (int x = start_x; x <= until_x; x++) {
-                for_coord(&coord_column, userdata);
-                coord_column.x++;
-            }
-            coord_row.y++;
+        n_coords = futile_bounds_to_coords(bounds, z, coords);;
+        if (n_coords == 2) {
+            start_x = coords[0].x;
+            start_y = coords[0].y;
+            until_x = coords[1].x;
+            until_y = coords[1].y;
+        } else {
+            start_x = until_x = coords[0].x;
+            start_y = until_y = coords[0].y;
         }
-        futile_coord_zoom(1, &coord_zoom);
-        start_y *= 2;
-        until_y *= 2;
-        start_x *= 2;
-        until_x *= 2;
+
+        coords->z = z;
+        for (unsigned int y = start_y; y <= until_y; y++) {
+            coords->y = y;
+            for (unsigned int x = start_x; x <= until_x; x++) {
+                coords->x = x;
+                for_coord(coords, userdata);
+            }
+        }
     }
 }
 
