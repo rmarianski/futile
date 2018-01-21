@@ -264,15 +264,15 @@ void test_explode_bounds() {
 }
 
 static int float_cmp(double x, double y, double eps) {
-    return abs(x - y) < eps;
+    return fabs(x - y) < eps;
 }
 
 void test_coord_to_lnglat() {
     futile_coord_s c = {.x=19295, .y=24641, .z=16};
     futile_point_s lnglat;
     futile_coord_to_lnglat(&c, &lnglat);
-    g_assert(float_cmp(lnglat.x, -74.0093994140625, 0.00001));
-    g_assert(float_cmp(lnglat.y, 40.709792012434946, 0.00001));
+    g_assert(float_cmp(lnglat.x, -74.0093994140625, 0.01));
+    g_assert(float_cmp(lnglat.y, 40.709792012434946, 0.01));
 }
 
 void test_lnglat_to_coord() {
@@ -289,10 +289,10 @@ void test_coord_to_bounds() {
     futile_coord_s c = {.x=19295, .y=24641, .z=16};
     futile_bounds_s b;
     futile_coord_to_bounds(&c, &b);
-    g_assert(float_cmp(-74.009399414062, b.minx, 0.00001));
-    g_assert(float_cmp(40.705627938206, b.miny, 0.00001));
-    g_assert(float_cmp(-74.003906250000, b.maxx, 0.00001));
-    g_assert(float_cmp(40.709792012435, b.maxy, 0.00001));
+    g_assert(float_cmp(-74.009399414062, b.minx, 0.01));
+    g_assert(float_cmp(40.705627938206, b.miny, 0.01));
+    g_assert(float_cmp(-74.003906250000, b.maxx, 0.01));
+    g_assert(float_cmp(40.709792012435, b.maxy, 0.01));
 }
 
 void test_bounds_to_multiple_coords() {
@@ -330,24 +330,24 @@ void test_mercator_to_wgs84() {
     futile_point_s merc = {.x=-8233978.22, .y=4980225.91};
     futile_point_s lnglat;
     futile_mercator_to_lnglat(&merc, &lnglat);
-    g_assert(float_cmp(-73.96708488464355, lnglat.x, 0.00001));
-    g_assert(float_cmp(40.781906259287, lnglat.y, 0.00001));
+    g_assert(float_cmp(-73.96708488464355, lnglat.x, 0.01));
+    g_assert(float_cmp(40.781906259287, lnglat.y, 0.01));
 }
 
 void test_wgs84_to_mercator() {
     futile_point_s lnglat = {.x=-73.96708488464355, .y=40.781906259287};
     futile_point_s merc;
     futile_lnglat_to_mercator(&lnglat, &merc);
-    g_assert(float_cmp(-8233978.22, merc.x, 0.00001));
-    g_assert(float_cmp(4980225.91, merc.y, 0.00001));
+    g_assert(float_cmp(-8233978.22, merc.x, 0.01));
+    g_assert(float_cmp(4980225.91, merc.y, 0.01));
 }
 
 void test_coord_to_mercator() {
     futile_coord_s coord = {.x=19302, .y=24623, .z=16};
     futile_point_s merc;
     futile_coord_to_mercator(&coord, &merc);
-    g_assert(float_cmp(-8234408.183105, merc.x, 0.00001));
-    g_assert(float_cmp(4980636.763062, merc.y, 0.00001));
+    g_assert(float_cmp(-8234408.183105, merc.x, 0.01));
+    g_assert(float_cmp(4980636.763062, merc.y, 0.01));
 }
 
 void test_mercator_to_coord() {
@@ -375,10 +375,10 @@ void test_coord_mercator_to_bounds() {
     futile_coord_s coord = {.x=38600, .y=49295, .z=17};
     futile_bounds_s bounds;
     futile_coord_to_mercator_bounds(&coord, &bounds);
-    g_assert(float_cmp(-8235631.175558, bounds.minx, 0.00001));
-    g_assert(float_cmp(4965349.357405, bounds.miny, 0.00001));
-    g_assert(float_cmp(-8235325.427445, bounds.maxx, 0.00001));
-    g_assert(float_cmp(4965655.105518, bounds.maxy, 0.00001));
+    g_assert(float_cmp(-8235631.175558, bounds.minx, 0.01));
+    g_assert(float_cmp(4965349.357405, bounds.miny, 0.01));
+    g_assert(float_cmp(-8235325.427445, bounds.maxx, 0.01));
+    g_assert(float_cmp(4965655.105518, bounds.maxy, 0.01));
 }
 
 void test_mercator_bounds_to_coords() {
@@ -607,7 +607,7 @@ int main(int argc, char *argv[]) {
     g_test_add_func("/coord/zoom/up", test_coord_zoom_up);
     g_test_add_func("/coord/coord-parent-invalid", test_coord_parent_invalid);
     g_test_add_func("/coord/coord-parent-valid", test_coord_parent_valid);
-    g_test_add_func("/coord/coord-parent-valid", test_coord_parent_inplace);
+    g_test_add_func("/coord/coord-parent-inplace", test_coord_parent_inplace);
     g_test_add_func("/coord/coord-children", test_coord_children);
     g_test_add_func("/coord/coord-not-valid", test_coord_not_valid);
     g_test_add_func("/coord/coord-valid", test_coord_valid);
